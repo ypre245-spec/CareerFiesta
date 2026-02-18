@@ -140,7 +140,7 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-gray-800">Live Statistics</h2>
-                    <p class="text-xs text-gray-500">Total respondents per section</p>
+                    <p id="totalRespondentsDisplay" class="text-sm text-gray-500 font-medium">Loading total...</p>
                 </div>
             </div>
             <div class="flex gap-2 items-center">
@@ -617,9 +617,11 @@
 
             const loader = document.getElementById('dashboardLoader');
             const listContainer = document.getElementById('dashboardLists');
+            const totalDisplay = document.getElementById('totalRespondentsDisplay');
             
             loader.classList.remove('hidden');
             listContainer.innerHTML = ''; // Clear previous
+            totalDisplay.textContent = 'Updating...';
 
             try {
                 // Fetch using GET to retrieve list
@@ -627,6 +629,11 @@
                 const data = await response.json();
                 
                 loader.classList.add('hidden');
+                
+                // Calculate Total
+                let totalCount = 0;
+                Object.values(data).forEach(names => totalCount += names.length);
+                totalDisplay.innerHTML = `Total Respondents: <span class="text-blue-600 font-bold text-lg">${totalCount}</span>`;
                 
                 // If empty
                 if (Object.keys(data).length === 0) {
@@ -652,6 +659,7 @@
 
             } catch (error) {
                 loader.classList.add('hidden');
+                totalDisplay.textContent = 'Error loading data';
                 listContainer.innerHTML = `<div class="col-span-full text-center text-red-500 py-4">Failed to load data: ${error.message}</div>`;
             }
         }
